@@ -6,28 +6,32 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 
 class MainActivity : ComponentActivity() {
@@ -40,8 +44,23 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Immutable
+data class HorizontalImageDto(
+    val title: String,
+    val isSeeAllEnabled: Boolean
+)
+
 @Composable
 fun HeaderScreen() {
+    val items = listOf(
+        HorizontalImageDto(
+            title = "Memories", isSeeAllEnabled = true
+        ),
+        HorizontalImageDto(
+            title = "Featured Photos", isSeeAllEnabled = false
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,8 +68,8 @@ fun HeaderScreen() {
     ) {
         HeaderWidget()
         LazyColumn {
-            items(2) {
-                HorizontalImageWidget()
+            itemsIndexed(items = items) { _: Int, item: HorizontalImageDto ->
+                HorizontalImageWidget(title = item.title, isSeeAllEnabled = item.isSeeAllEnabled)
             }
         }
     }
@@ -61,41 +80,52 @@ private fun HeaderWidget() {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 16.dp),
+            .padding(start = 16.dp, top = 16.dp, bottom = 6.dp),
         text = "For You", fontSize = 32.sp
     )
 }
 
 @Composable
-fun HorizontalImageWidget() {
+fun HorizontalImageWidget(
+    title: String,
+    isSeeAllEnabled: Boolean
+) {
     Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.size(16.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Memories", fontSize = 20.sp)
-            Text(text = "See All", fontSize = 20.sp, color = Color.Blue)
+            Text(text = title, fontSize = 20.sp)
+            if (isSeeAllEnabled) {
+                Text(text = "See All", fontSize = 20.sp, color = Color.Blue)
+            }
         }
         Spacer(modifier = Modifier.size(8.dp))
         LazyRow(
-            modifier = Modifier
-                .fillMaxHeight(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier.semantics(mergeDescendants = true) {},
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
         ) {
             items(5) {
                 Card(
-                    modifier = Modifier.size(width = 320.dp, height = 480.dp),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier = Modifier
+                        .size(width = 320.dp, height = 480.dp),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
-                    AsyncImage(
+                    SubcomposeAsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data("https://cdn.britannica.com/47/188747-050-1D34E743/Bill-Gates-2011.jpg")
                             .crossfade(true)
                             .build(),
                         contentScale = ContentScale.Crop,
+                        loading = {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(30.dp)
+                            )
+                        },
                         contentDescription = null
                     )
                 }

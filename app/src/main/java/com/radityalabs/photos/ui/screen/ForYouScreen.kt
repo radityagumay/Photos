@@ -36,7 +36,7 @@ data class HorizontalImageDto(
 )
 
 @Composable
-fun HeaderScreen(
+fun ForYouScreen(
     modifier: Modifier
 ) {
     val items = listOf(
@@ -51,19 +51,27 @@ fun HeaderScreen(
     Column(
         modifier = modifier
     ) {
-        HeaderWidget()
-        LazyColumn {
+        HeaderWidget(modifier = modifier)
+        LazyColumn(
+            modifier = modifier
+        ) {
             itemsIndexed(items = items) { _: Int, item: HorizontalImageDto ->
-                HorizontalImageWidget(title = item.title, isSeeAllEnabled = item.isSeeAllEnabled)
+                HorizontalImageWidget(
+                    modifier = modifier,
+                    title = item.title,
+                    isSeeAllEnabled = item.isSeeAllEnabled
+                )
             }
         }
     }
 }
 
 @Composable
-private fun HeaderWidget() {
+private fun HeaderWidget(
+    modifier: Modifier
+) {
     Text(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp, bottom = 6.dp),
         text = "For You", fontSize = 32.sp
@@ -72,12 +80,13 @@ private fun HeaderWidget() {
 
 @Composable
 fun HorizontalImageWidget(
+    modifier: Modifier,
     title: String,
     isSeeAllEnabled: Boolean
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -87,16 +96,15 @@ fun HorizontalImageWidget(
                 Text(text = "See All", fontSize = 20.sp, color = Color.Blue)
             }
         }
-        Spacer(modifier = Modifier.size(8.dp))
+        Spacer(modifier = modifier.size(8.dp))
         LazyRow(
-            modifier = Modifier.semantics(mergeDescendants = true) {},
+            modifier = modifier.semantics(mergeDescendants = true) {},
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
         ) {
             items(5) {
                 Card(
-                    modifier = Modifier
-                        .size(width = 320.dp, height = 480.dp),
+                    modifier = modifier.size(width = 320.dp, height = 480.dp),
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     SubcomposeAsyncImage(
@@ -107,8 +115,7 @@ fun HorizontalImageWidget(
                         contentScale = ContentScale.Crop,
                         loading = {
                             CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(30.dp)
+                                modifier = modifier.size(30.dp)
                             )
                         },
                         contentDescription = null
@@ -122,5 +129,5 @@ fun HorizontalImageWidget(
 @Preview
 @Composable
 fun HeaderScreenPreview() {
-    HeaderScreen(modifier = Modifier.fillMaxWidth())
+    ForYouScreen(modifier = Modifier.fillMaxWidth())
 }

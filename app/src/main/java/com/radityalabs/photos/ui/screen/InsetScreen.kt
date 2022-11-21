@@ -9,22 +9,15 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.darkColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -47,6 +40,7 @@ import com.google.accompanist.insets.ui.BottomNavigation
 import com.google.accompanist.insets.ui.Scaffold
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.radityalabs.photos.R.drawable
+import com.radityalabs.photos.ui.theme.PhotoAppTheme
 
 @Composable
 fun AccompanistSampleTheme(
@@ -75,7 +69,7 @@ class EdgeToEdgeLazyColumnWithBottomNav : ComponentActivity() {
                 systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = false)
             }
 
-            AccompanistSampleTheme {
+            PhotoAppTheme {
                 ProvideWindowInsets {
                     Sample()
                 }
@@ -91,7 +85,8 @@ private fun Sample() {
             var selected by remember { mutableStateOf(0) }
 
             BottomNavigation(
-                backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.95f),
+                backgroundColor = MaterialTheme.colors
+                    .onBackground.copy(alpha = 0.5f),
                 contentPadding = rememberInsetsPaddingValues(
                     LocalWindowInsets.current.navigationBars
                 )

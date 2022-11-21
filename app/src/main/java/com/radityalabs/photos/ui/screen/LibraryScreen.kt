@@ -39,13 +39,17 @@ fun LibraryScreen(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        val list = (1..50).map { it.toString() }
+        val list = (1..1000).map { it.toString() }
+
         LazyVerticalGrid(
             contentPadding = contentPadding,
             modifier = modifier.background(Color.White),
             columns = GridCells.Fixed(3),
             content = {
-                items(list.size) { index ->
+                items(
+                    count = list.size,
+                    key = { it }
+                ) { index ->
                     Box(
                         modifier = modifier.padding(1.dp)
                     ) {
@@ -54,7 +58,7 @@ fun LibraryScreen(
                                 .fillMaxWidth()
                                 .size(120.dp),
                             model = Builder(LocalContext.current)
-                                .data("https://cdn.britannica.com/47/188747-050-1D34E743/Bill-Gates-2011.jpg")
+                                .data("https://picsum.photos/id/$index/200/300")
                                 .crossfade(true)
                                 .build(),
                             contentScale = ContentScale.Crop,
@@ -98,7 +102,7 @@ fun LibraryScreen(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
             ) {
-                Text(text = "17 Apr 2022", color = Color.White, fontSize = 20.sp)
+                Text(text = "22 Nov 2022", color = Color.White, fontSize = 20.sp)
 
                 Row(
                     modifier = modifier.fillMaxWidth(),

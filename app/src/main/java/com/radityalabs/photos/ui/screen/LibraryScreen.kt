@@ -41,6 +41,7 @@ fun LibraryScreen(
     ) {
         val list = (1..1000).map { it.toString() }
 
+        // Images
         LazyVerticalGrid(
             contentPadding = contentPadding,
             modifier = modifier.background(Color.White),
@@ -74,7 +75,7 @@ fun LibraryScreen(
             }
         )
 
-        // a gradient background for the header
+        // A gradient background for the header
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -89,7 +90,7 @@ fun LibraryScreen(
                 )
         )
 
-        // a date section
+        // A date section
         Column(
             modifier = modifier
                 .fillMaxWidth()

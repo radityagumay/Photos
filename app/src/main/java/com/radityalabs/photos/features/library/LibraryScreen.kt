@@ -1,4 +1,4 @@
-package com.radityalabs.photos.ui.screen
+package com.radityalabs.photos.features.library
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -28,13 +29,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
 
+@ExperimentalLifecycleComposeApi
 @Composable
-fun LibraryScreen(
+internal fun LibraryScreenRoute(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    vm: LibraryScreenViewModel = hiltViewModel()
+) {
+    val addressWherePictureTook by vm.addressWherePictureTook.collectAsStateWithLifecycle()
+    val dateWherePictureTook by vm.dateWherePictureTook.collectAsStateWithLifecycle()
+
+    LibraryScreen(
+        modifier = modifier,
+        contentPadding = contentPadding,
+        addressWherePictureTook = addressWherePictureTook,
+        dateWherePictureTook = dateWherePictureTook
+    )
+}
+
+@Composable
+private fun LibraryScreen(
     modifier: Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    addressWherePictureTook: String,
+    dateWherePictureTook: String
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -103,7 +127,7 @@ fun LibraryScreen(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
             ) {
-                Text(text = "22 Nov 2022", color = Color.White, fontSize = 20.sp)
+                Text(text = dateWherePictureTook, color = Color.White, fontSize = 20.sp)
 
                 Row(
                     modifier = modifier.fillMaxWidth(),
@@ -144,8 +168,10 @@ fun LibraryScreen(
                 }
             }
 
+            Spacer(modifier = modifier.size(4.dp))
+
             Text(
-                text = "Catur tunggal", color = Color.White, fontSize = 14.sp,
+                text = addressWherePictureTook, color = Color.White, fontSize = 14.sp,
                 modifier = modifier
             )
         }
@@ -155,7 +181,7 @@ fun LibraryScreen(
 @Preview
 @Composable
 fun LibraryScreenPreview() {
-    LibraryScreen(
+    /*LibraryScreen(
         modifier = Modifier.fillMaxSize()
-    )
+    )*/
 }

@@ -40,7 +40,7 @@ import coil.request.ImageRequest.Builder
 internal fun LibraryScreenRoute(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    vm: LibraryScreenViewModel = hiltViewModel()
+    vm: LibraryViewModel = hiltViewModel()
 ) {
     val addressWherePictureTook by vm.addressWherePictureTook.collectAsStateWithLifecycle()
     val dateWherePictureTook by vm.dateWherePictureTook.collectAsStateWithLifecycle()
@@ -181,7 +181,10 @@ private fun LibraryScreen(
 @Preview
 @Composable
 fun LibraryScreenPreview() {
-    /*LibraryScreen(
-        modifier = Modifier.fillMaxSize()
-    )*/
+    LibraryScreen(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(0.dp),
+        addressWherePictureTook = "Jakarta",
+        dateWherePictureTook = "10 November 2022"
+    )
 }

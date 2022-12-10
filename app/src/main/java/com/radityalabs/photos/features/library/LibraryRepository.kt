@@ -5,17 +5,14 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 internal interface LibraryRepository {
-    fun getImages(): Flow<String>
+    fun getImages(): Flow<LibraryUiState>
 }
 
 internal class DefaultLibraryRepository @Inject constructor() : LibraryRepository {
-    override fun getImages(): Flow<String> {
+    override fun getImages(): Flow<LibraryUiState> {
         return flow {
-            (0..100).forEach { index ->
-                val url = "https://picsum.photos/id/$index/200/300"
-
-                emit(url)
-            }
+            val images = (1..100).map { "https://picsum.photos/id/$it/200/300" }
+            emit(LibraryUiState.Success(images))
         }
     }
 }

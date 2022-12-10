@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-internal class LibraryViewModel @Inject constructor() : ViewModel() {
+internal class LibraryViewModel @Inject constructor(
+    repository: LibraryRepository
+) : ViewModel() {
 
     val addressWherePictureTook: StateFlow<String> = flow {
         emit("Bali")
@@ -28,7 +30,10 @@ internal class LibraryViewModel @Inject constructor() : ViewModel() {
         initialValue = ""
     )
 
-    val images: StateFlow<String> = flow {
-
-    }
+    val images: StateFlow<LibraryUiState> = repository.getImages()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = LibraryUiState.Loading
+        )
 }

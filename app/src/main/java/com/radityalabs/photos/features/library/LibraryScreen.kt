@@ -34,6 +34,8 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
+import com.radityalabs.photos.features.library.LibraryUiState.Loading
+import com.radityalabs.photos.features.library.LibraryUiState.Success
 
 @ExperimentalLifecycleComposeApi
 @Composable
@@ -44,12 +46,14 @@ internal fun LibraryScreenRoute(
 ) {
     val addressWherePictureTook by vm.addressWherePictureTook.collectAsStateWithLifecycle()
     val dateWherePictureTook by vm.dateWherePictureTook.collectAsStateWithLifecycle()
+    val state by vm.images.collectAsStateWithLifecycle()
 
     LibraryScreen(
         modifier = modifier,
         contentPadding = contentPadding,
         addressWherePictureTook = addressWherePictureTook,
-        dateWherePictureTook = dateWherePictureTook
+        dateWherePictureTook = dateWherePictureTook,
+        state = state
     )
 }
 
@@ -58,122 +62,126 @@ private fun LibraryScreen(
     modifier: Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     addressWherePictureTook: String,
-    dateWherePictureTook: String
+    dateWherePictureTook: String,
+    state: LibraryUiState
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        val list = (1..1000).map { it.toString() }
-
-        // Images
-        LazyVerticalGrid(
-            contentPadding = contentPadding,
-            modifier = modifier.background(Color.White),
-            columns = GridCells.Fixed(3),
-            content = {
-                items(
-                    count = list.size,
-                    key = { it }
-                ) { index ->
-                    Box(
-                        modifier = modifier.padding(1.dp)
-                    ) {
-                        SubcomposeAsyncImage(
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .size(120.dp),
-                            model = Builder(LocalContext.current)
-                                .data("https://picsum.photos/id/$index/200/300")
-                                .crossfade(true)
-                                .build(),
-                            contentScale = ContentScale.Crop,
-                            loading = {
-                                CircularProgressIndicator(
-                                    modifier = modifier.size(30.dp)
-                                )
-                            },
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-        )
-
-        // A gradient background for the header
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .size(200.dp)
-                .background(
-                    alpha = 0.5f,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Black, Color.Transparent),
-                        startY = 0f,
-                        endY = 400f
-                    )
-                )
-        )
-
-        // A date section
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp)
-        ) {
-
-            Spacer(modifier = modifier.size(36.dp))
-
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
+    when (state) {
+        is Loading -> Text(text = "Loading...")
+        is Success -> {
+            Box(
+                modifier = modifier.fillMaxSize()
             ) {
-                Text(text = dateWherePictureTook, color = Color.White, fontSize = 20.sp)
+                // Images
+                LazyVerticalGrid(
+                    contentPadding = contentPadding,
+                    modifier = modifier.background(Color.White),
+                    columns = GridCells.Fixed(3),
+                    content = {
+                        items(
+                            count = state.images.size,
+                            key = { it }
+                        ) { index ->
+                            Box(
+                                modifier = modifier.padding(1.dp)
+                            ) {
+                                SubcomposeAsyncImage(
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .size(120.dp),
+                                    model = Builder(LocalContext.current)
+                                        .data(state.images[index])
+                                        .crossfade(true)
+                                        .build(),
+                                    contentScale = ContentScale.Crop,
+                                    loading = {
+                                        CircularProgressIndicator(
+                                            modifier = modifier.size(30.dp)
+                                        )
+                                    },
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
+                )
 
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                // A gradient background for the header
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .size(200.dp)
+                        .background(
+                            alpha = 0.5f,
+                            brush = Brush.verticalGradient(
+                                colors = listOf(Color.Black, Color.Transparent),
+                                startY = 0f,
+                                endY = 400f
+                            )
+                        )
+                )
+
+                // A date section
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp)
                 ) {
-                    Card(
-                        shape = MaterialTheme.shapes.small,
-                        modifier = modifier.wrapContentWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Black
-                        )
+
+                    Spacer(modifier = modifier.size(36.dp))
+
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
                     ) {
-                        Text(
-                            text = "Select",
-                            modifier = modifier.padding(
-                                start = 8.dp,
-                                top = 4.dp,
-                                end = 8.dp,
-                                bottom = 4.dp
-                            ),
-                            fontSize = 10.sp,
-                            color = Color.White
-                        )
+                        Text(text = dateWherePictureTook, color = Color.White, fontSize = 20.sp)
+
+                        Row(
+                            modifier = modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            Card(
+                                shape = MaterialTheme.shapes.small,
+                                modifier = modifier.wrapContentWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Black
+                                )
+                            ) {
+                                Text(
+                                    text = "Select",
+                                    modifier = modifier.padding(
+                                        start = 8.dp,
+                                        top = 4.dp,
+                                        end = 8.dp,
+                                        bottom = 4.dp
+                                    ),
+                                    fontSize = 10.sp,
+                                    color = Color.White
+                                )
+                            }
+                            Spacer(modifier = modifier.size(16.dp))
+                            Card(
+                                modifier = modifier,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Black
+                                )
+                            ) {
+                                Text(
+                                    text = "...", modifier = modifier.padding(4.dp),
+                                    fontSize = 10.sp,
+                                    color = Color.White
+                                )
+                            }
+                        }
                     }
-                    Spacer(modifier = modifier.size(16.dp))
-                    Card(
-                        modifier = modifier,
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.Black
-                        )
-                    ) {
-                        Text(
-                            text = "...", modifier = modifier.padding(4.dp),
-                            fontSize = 10.sp,
-                            color = Color.White
-                        )
-                    }
+
+                    Spacer(modifier = modifier.size(4.dp))
+
+                    Text(
+                        text = addressWherePictureTook, color = Color.White, fontSize = 14.sp,
+                        modifier = modifier
+                    )
                 }
             }
-
-            Spacer(modifier = modifier.size(4.dp))
-
-            Text(
-                text = addressWherePictureTook, color = Color.White, fontSize = 14.sp,
-                modifier = modifier
-            )
         }
     }
 }
@@ -185,6 +193,7 @@ fun LibraryScreenPreview() {
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
         addressWherePictureTook = "Jakarta",
-        dateWherePictureTook = "10 November 2022"
+        dateWherePictureTook = "10 November 2022",
+        state = LibraryUiState.Success(listOf("https://picsum.photos/id/0/200/300"))
     )
 }
